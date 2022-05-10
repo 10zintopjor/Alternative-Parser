@@ -16,14 +16,42 @@ def convert_file_to_uni(text,file_name):
     lines = re.split("\n",text)
     with open(f"./uni_dic/{file_name}","a") as f:
         for line in lines:
-            z = re.match("(.*)\|(.*)",line)
+            z = re.match("(.*),(.*)",line)
             if z:
-                word =convert_willie_to_uni(z.group(1))
-                desc = convert_willie_to_uni(z.group(2))
-                f.write(f"{word},{desc}\n")
+                word = z.group(1)
+                desc = z.group(2)
+                get_alt_words(word,desc,file_name)
+
+def get_alt_words(word,desc,file_name):
+    alt_sign = "དང་འདྲ"
+    if alt_sign not in desc:
+        return
+    alt_words = []
+    alt_words.append(word)
+    for match in re.finditer(f"{alt_sign}",desc):
+        alt_words.append(get_word(desc,match))
+
+    with open("./alt_words/monlam","a") as f:
+        f.write(str(alt_words)+"\n")
+    
+
+def get_word(desc,match):
+    start = match.start()-1
+    word =""
+    while start >= 0:
+        if desc[start] == " ":
+            break
+        word = desc[start]+word
+        start-=1
+    return word
+
+
+
+def main(dic_name):
+    text = Path(f"./uni_dic/monlam").read_text()
+    convert_file_to_uni(text,dic_name)
 
 
 if __name__ == "__main__":
-    text = Path("./willie_dic/34-dung-dkar-tshig-mdzod-chen-mo-Tib").read_text()
-    file_name = Path("./willie_dic/34-dung-dkar-tshig-mdzod-chen-mo-Tib").stem
-    convert_file_to_uni(text,file_name)
+    dic_name = "monlam"
+    main(dic_name)
