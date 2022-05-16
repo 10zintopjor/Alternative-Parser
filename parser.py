@@ -34,11 +34,11 @@ def convert_file_to_uni(text,file_name):
                 #get_monlam_alt_words(word,desc,file_name)
 
 
-def get_monlam_alt_words():
+def get_monlam_alt_words(name):
     alt_signs = ["དང་འདྲ","འབྲི་ཚུལ་གཞན"]
     alt_sign = "འབྲི་ཚུལ་གཞན"
     alt_words = []
-    with open("./uni_dic/monlam") as file:
+    with open(f"./phurbadict/{name}.csv") as file:
         for line in file:
             if alt_sign in line:
                 alt_word = extract_alt_words(line,alt_sign)
@@ -82,7 +82,8 @@ def convert_to_csv(li):
 
 
 if __name__ == "__main__":
-    alt_words = get_monlam_alt_words()
-    with open("./alt_word.txt","a") as file:
+    name = "tibet_dict"
+    alt_words = get_monlam_alt_words(name)
+    with open(f"./lat_alt_words/{name}","a") as file:
         file.write("\n".join(convert_to_csv(word) for word in alt_words))
     #Path("./alt_word.txt").write_text(str(alt_words))
