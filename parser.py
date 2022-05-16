@@ -36,13 +36,14 @@ def convert_file_to_uni(text,file_name):
 
 def get_monlam_alt_words(name):
     alt_signs = ["དང་འདྲ","འབྲི་ཚུལ་གཞན"]
-    alt_sign = "འབྲི་ཚུལ་གཞན"
+    alt_sign = alt_signs[0]
     alt_words = []
-    with open(f"./phurbadict/{name}.csv") as file:
+    with open(f"./uni_dic/{name}.csv") as file:
         for line in file:
             if alt_sign in line:
                 alt_word = extract_alt_words(line,alt_sign)
-                alt_words.append(alt_word)
+                if alt_word:
+                    alt_words.append(alt_word)
 
     return alt_words
 
@@ -67,23 +68,25 @@ def extract_alt_words(line,alt_sign):
     alt_words=[main_word]
     for match in re.finditer(f"{alt_sign}",desc):
         alt_word = get_word(desc,match)
-        alt_words.append(alt_word)
-
+        if abs(len(main_word)-len(alt_word)) < 5:
+            alt_words.append(alt_word)
+    if len(alt_words) <= 1:
+        return
     return alt_words    
 
 
 def convert_to_csv(li):
     line = ""
     for index,elem in enumerate(li):
-        line += clean_word(elem)
+        line += elem
         if index < len(li)-1:
             line+=","
     return line
 
 
 if __name__ == "__main__":
-    name = "tibet_dict"
+    name = "monlam"
     alt_words = get_monlam_alt_words(name)
-    with open(f"./lat_alt_words/{name}","a") as file:
+    with open(f"./lat_alt_words2/{name}.csv","a") as file:
         file.write("\n".join(convert_to_csv(word) for word in alt_words))
     #Path("./alt_word.txt").write_text(str(alt_words))
